@@ -1,12 +1,11 @@
-// English comments as requested by the user.
 const db = require('../db/db');
 
-async function findAll() {
-  return await db('casos').select('*');
+function findAll() {
+  return db('casos').select('*');
 }
 
-async function findById(id) {
-  return await db('casos').where({ id }).first();
+function findById(id) {
+  return db('casos').where({ id }).first();
 }
 
 async function create(caso) {
@@ -24,8 +23,8 @@ async function remove(id) {
   return count > 0;
 }
 
-async function findByAgenteId(agenteId) {
-  return await db('casos').where({ agente_id: agenteId }).select('*');
+function findByAgenteId(agenteId) {
+  return db('casos').where({ agente_id: agenteId }).select('*');
 }
 
 module.exports = {
