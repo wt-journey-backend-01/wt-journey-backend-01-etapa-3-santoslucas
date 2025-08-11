@@ -18,6 +18,7 @@ async function findAll(filters) {
     const order = filters.sort.startsWith('-') ? 'desc' : 'asc';
     const column = filters.sort.replace('-', '');
     
+    // Whitelist valid columns for sorting to prevent SQL injection
     const validSortColumns = ['nome', 'dataDeIncorporacao', 'cargo'];
     if (validSortColumns.includes(column)) {
         query.orderBy(column, order);

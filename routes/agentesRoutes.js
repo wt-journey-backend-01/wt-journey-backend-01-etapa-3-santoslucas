@@ -11,6 +11,8 @@ const agentesController = require('../controllers/agentesController');
 
 /**
  * @swagger
+/**
+ * @swagger
  * /agentes:
  *   get:
  *     summary: Retorna a lista de todos os agentes
@@ -22,10 +24,27 @@ const agentesController = require('../controllers/agentesController');
  *           type: string
  *         description: Filtra agentes pelo cargo.
  *       - in: query
+ *         name: dataDeIncorporacaoInicio
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: "2000-01-01"
+ *         description: Filtra agentes com data de incorporação a partir desta data (formato YYYY-MM-DD).
+ *       - in: query
+ *         name: dataDeIncorporacaoFim
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: "2015-12-31"
+ *         description: Filtra agentes com data de incorporação até esta data (formato YYYY-MM-DD).
+ *       - in: query
  *         name: sort
  *         schema:
  *           type: string
- *         description: Ordena por data de incorporação ('dataDeIncorporacao' para ascendente, '-dataDeIncorporacao' para descendente).
+ *           example: "-dataDeIncorporacao"
+ *         description: >
+ *           Ordena os resultados. Use o nome do campo para ordem ascendente e "-nomeDoCampo" para descendente
+ *           (ex: dataDeIncorporacao ou -dataDeIncorporacao).
  *     responses:
  *       200:
  *         description: A lista de agentes.
@@ -35,6 +54,8 @@ const agentesController = require('../controllers/agentesController');
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Agente'
+ *       400:
+ *         description: Parâmetro de filtro inválido.
  */
 router.get('/', agentesController.getAllAgentes);
 

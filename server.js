@@ -1,25 +1,23 @@
 const express = require('express');
+require('dotenv').config();
+
 const agentesRoutes = require('./routes/agentesRoutes');
 const casosRoutes = require('./routes/casosRoutes');
-const setupSwagger = require('./docs/swagger');
+const { globalErrorHandler } = require('./utils/errorHandler');
+const swaggerDocs = require('./docs/swagger');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-
-setupSwagger(app);
 
 app.use('/agentes', agentesRoutes);
 app.use('/casos', casosRoutes);
 
-app.get('/', (req, res) => {
-    res.send('API do Departamento de Polícia está no ar! Acesse /docs para ver a documentação.');
-});
+swaggerDocs(app);
+
+app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
     console.log(`Servidor do Departamento de Polícia rodando em http://localhost:${PORT}`);
 });
-
-const { globalErrorHandler } = require('./utils/errorHandler');
-app.use(globalErrorHandler);

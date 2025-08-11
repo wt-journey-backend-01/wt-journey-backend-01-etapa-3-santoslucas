@@ -13,25 +13,19 @@ async function getAllAgentes(req, res) {
     try {
         const { cargo, dataDeIncorporacaoInicio, dataDeIncorporacaoFim, sort } = req.query;
 
-        // Validate query parameters before using them
         if (dataDeIncorporacaoInicio && !DATE_REGEX.test(dataDeIncorporacaoInicio)) {
-            return res.status(400).json({ message: 'Invalid format for dataDeIncorporacaoInicio. Use YYYY-MM-DD.' });
+            return res.status(400).json({ message: 'Formato inválido para dataDeIncorporacaoInicio. Use YYYY-MM-DD.' });
         }
         if (dataDeIncorporacaoFim && !DATE_REGEX.test(dataDeIncorporacaoFim)) {
-            return res.status(400).json({ message: 'Invalid format for dataDeIncorporacaoFim. Use YYYY-MM-DD.' });
+            return res.status(400).json({ message: 'Formato inválido para dataDeIncorporacaoFim. Use YYYY-MM-DD.' });
         }
 
-        const filters = {
-            cargo,
-            dataDeIncorporacaoInicio,
-            dataDeIncorporacaoFim,
-            sort,
-        };
+        const filters = { cargo, dataDeIncorporacaoInicio, dataDeIncorporacaoFim, sort };
 
         const agentes = await agentesRepository.findAll(filters);
         res.status(200).json(agentes);
     } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "Erro interno no servidor." });
     }
 }
 
@@ -39,15 +33,15 @@ async function getAgenteById(req, res) {
     try {
         const { id } = req.params;
         if (!UUID_REGEX.test(id)) {
-            return res.status(400).json({ message: 'Invalid ID format.' });
+            return res.status(400).json({ message: 'Formato de ID inválido.' });
         }
         const agente = await agentesRepository.findById(id);
         if (!agente) {
-            return res.status(404).json({ message: 'Agent not found.' });
+            return res.status(404).json({ message: 'Agente não encontrado.' });
         }
         res.status(200).json(agente);
     } catch (error) {
-        res.status(500).json({ message: "Internal server error." });
+        res.status(500).json({ message: "Erro interno no servidor." });
     }
 }
 
@@ -55,18 +49,18 @@ async function createAgente(req, res) {
     try {
         const { nome, dataDeIncorporacao, cargo } = req.body;
         if (!nome || typeof nome !== 'string' || nome.trim() === '') {
-            return res.status(400).json({ message: 'The "nome" field is required.' });
+            return res.status(400).json({ message: 'O campo "nome" é obrigatório.' });
         }
         if (!cargo || typeof cargo !== 'string' || cargo.trim() === '') {
-            return res.status(400).json({ message: 'The "cargo" field is required.' });
+            return res.status(400).json({ message: 'O campo "cargo" é obrigatório.' });
         }
         if (!dataDeIncorporacao || !isValidDate(dataDeIncorporacao)) {
-            return res.status(400).json({ message: 'The "dataDeIncorporacao" field is required, must be a valid date, and cannot be in the future.' });
+            return res.status(400).json({ message: 'O campo "dataDeIncorporacao" é obrigatório, deve ser uma data válida e não pode ser no futuro.' });
         }
         const newAgente = await agentesRepository.create({ nome, dataDeIncorporacao, cargo });
         res.status(201).json(newAgente);
     } catch (error) {
-        res.status(500).json({ message: "Internal server error while creating agent." });
+        res.status(500).json({ message: "Erro interno ao criar agente." });
     }
 }
 
@@ -74,27 +68,25 @@ async function updateAgenteCompleto(req, res) {
     try {
         const { id } = req.params;
         const { nome, dataDeIncorporacao, cargo } = req.body;
-
         if (req.body.id) {
-            return res.status(400).json({ message: "The 'id' field cannot be changed." });
+            return res.status(400).json({ message: "O campo 'id' não pode ser alterado." });
         }
         if (!UUID_REGEX.test(id)) {
-            return res.status(400).json({ message: 'Invalid ID format.' });
+            return res.status(400).json({ message: 'Formato de ID inválido.' });
         }
-        if (!nome || !dataDeIncorporacao || !cargo) {
-            return res.status(400).json({ message: 'For a full update (PUT), all fields are required: nome, dataDeIncorporacao, cargo.' });
+        if (nome === undefined || dataDeIncorporacao === undefined || cargo === undefined) {
+            return res.status(400).json({ message: 'Para uma atualização completa (PUT), todos os campos são obrigatórios: nome, dataDeIncorporacao, cargo.' });
         }
         if (!isValidDate(dataDeIncorporacao)) {
-            return res.status(400).json({ message: 'The "dataDeIncorporacao" field must be a valid date and cannot be in the future.' });
+            return res.status(400).json({ message: 'O campo "dataDeIncorporacao" deve ser uma data válida e não pode ser no futuro.' });
         }
-
         const updatedAgente = await agentesRepository.update(id, { nome, dataDeIncorporacao, cargo });
         if (!updatedAgente) {
-            return res.status(404).json({ message: 'Agent not found.' });
+            return res.status(404).json({ message: 'Agente não encontrado.' });
         }
         res.status(200).json(updatedAgente);
     } catch (error) {
-        res.status(500).json({ message: "Internal server error while updating agent." });
+        res.status(500).json({ message: "Erro interno ao atualizar agente." });
     }
 }
 
@@ -102,24 +94,22 @@ async function updateAgenteParcial(req, res) {
     try {
         const { id } = req.params;
         const data = req.body;
-
         if (data.id) {
-            return res.status(400).json({ message: "The 'id' field cannot be changed." });
+            return res.status(400).json({ message: "O campo 'id' não pode ser alterado." });
         }
         if (!UUID_REGEX.test(id)) {
-            return res.status(400).json({ message: 'Invalid ID format.' });
+            return res.status(400).json({ message: 'Formato de ID inválido.' });
         }
         if (data.dataDeIncorporacao && !isValidDate(data.dataDeIncorporacao)) {
-            return res.status(400).json({ message: 'The "dataDeIncorporacao" field must be a valid date and cannot be in the future.' });
+            return res.status(400).json({ message: 'O campo "dataDeIncorporacao" deve ser uma data válida e não pode ser no futuro.' });
         }
-        
         const updatedAgente = await agentesRepository.update(id, data);
         if (!updatedAgente) {
-            return res.status(404).json({ message: 'Agent not found.' });
+            return res.status(404).json({ message: 'Agente não encontrado.' });
         }
         res.status(200).json(updatedAgente);
     } catch (error) {
-        res.status(500).json({ message: "Internal server error while updating agent." });
+        res.status(500).json({ message: "Erro interno ao atualizar agente." });
     }
 }
 
@@ -127,15 +117,15 @@ async function deleteAgente(req, res) {
     try {
         const { id } = req.params;
         if (!UUID_REGEX.test(id)) {
-            return res.status(400).json({ message: 'Invalid ID format.' });
+            return res.status(400).json({ message: 'Formato de ID inválido.' });
         }
         const success = await agentesRepository.remove(id);
         if (!success) {
-            return res.status(404).json({ message: 'Agent not found.' });
+            return res.status(404).json({ message: 'Agente não encontrado.' });
         }
         res.status(204).send();
     } catch (error) {
-        res.status(500).json({ message: "Internal server error while deleting agent." });
+        res.status(500).json({ message: "Erro interno ao deletar agente." });
     }
 }
 
@@ -143,16 +133,16 @@ async function findCasosByAgente(req, res) {
   try {
     const { id } = req.params;
     if (!UUID_REGEX.test(id)) {
-        return res.status(400).json({ message: 'Invalid ID format.' });
+        return res.status(400).json({ message: 'Formato de ID inválido.' });
     }
     const agente = await agentesRepository.findById(id);
     if (!agente) {
-        return res.status(404).json({ message: "Agent not found." });
+        return res.status(404).json({ message: "Agente não encontrado." });
     }
     const casos = await casosRepository.findByAgenteId(id);
     res.status(200).json(casos);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error." });
+    res.status(500).json({ message: "Erro interno no servidor." });
   }
 }
 
