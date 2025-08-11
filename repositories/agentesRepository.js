@@ -7,11 +7,11 @@ async function findAll(filters) {
     query.where('cargo', 'ilike', `%${filters.cargo}%`);
   }
 
-  if (filters?.dataIncorporacaoInicio) {
-    query.where('dataDeIncorporacao', '>=', filters.dataIncorporacaoInicio);
+  if (filters?.dataDeIncorporacaoInicio) {
+    query.where('dataDeIncorporacao', '>=', filters.dataDeIncorporacaoInicio);
   }
-  if (filters?.dataIncorporacaoFim) {
-    query.where('dataDeIncorporacao', '<=', filters.dataIncorporacaoFim);
+  if (filters?.dataDeIncorporacaoFim) {
+    query.where('dataDeIncorporacao', '<=', filters.dataDeIncorporacaoFim);
   }
 
   if (filters?.sort) {
