@@ -8,17 +8,16 @@ async function findAll(filters) {
   }
 
   if (filters?.dataDeIncorporacaoInicio) {
-    query.where('dataDeIncorporacao', '>=', filters.dataDeIncorporacaoInicio);
+    query.whereRaw('"dataDeIncorporacao" >= ?::date', [filters.dataDeIncorporacaoInicio]);
   }
   if (filters?.dataDeIncorporacaoFim) {
-    query.where('dataDeIncorporacao', '<=', filters.dataDeIncorporacaoFim);
+    query.whereRaw('"dataDeIncorporacao" <= ?::date', [filters.dataDeIncorporacaoFim]);
   }
 
   if (filters?.sort) {
     const order = filters.sort.startsWith('-') ? 'desc' : 'asc';
     const column = filters.sort.replace('-', '');
     
-    // Whitelist valid columns for sorting to prevent SQL injection
     const validSortColumns = ['nome', 'dataDeIncorporacao', 'cargo'];
     if (validSortColumns.includes(column)) {
         query.orderBy(column, order);

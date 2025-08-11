@@ -1,3 +1,4 @@
+// English comments as requested by the user.
 const casosRepository = require('../repositories/casosRepository');
 const agentesRepository = require('../repositories/agentesRepository');
 
@@ -5,6 +6,15 @@ const UUID_REGEX = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}
 
 async function getAllCasos(req, res) {
     try {
+        const { status, agente_id, q } = req.query;
+
+        if (status && !['aberto', 'solucionado'].includes(status)) {
+            return res.status(400).json({ message: 'Valor inválido para o filtro "status". Use "aberto" ou "solucionado".' });
+        }
+        if (agente_id && !UUID_REGEX.test(agente_id)) {
+            return res.status(400).json({ message: 'Formato de ID de agente inválido para o filtro "agente_id".' });
+        }
+
         const casos = await casosRepository.findAll(req.query);
         res.status(200).json(casos);
     } catch (error) {
@@ -67,7 +77,7 @@ async function updateCasoCompleto(req, res) {
         if (!UUID_REGEX.test(id)) {
             return res.status(400).json({ message: 'Formato de ID inválido.' });
         }
-        if (!titulo || !descricao || !status) {
+        if (titulo === undefined || descricao === undefined || status === undefined) {
              return res.status(400).json({ message: 'Para uma atualização completa (PUT), os campos titulo, descricao e status são obrigatórios.' });
         }
         if (!['aberto', 'solucionado'].includes(status)) {
@@ -79,7 +89,9 @@ async function updateCasoCompleto(req, res) {
              if (!agente) return res.status(404).json({ message: 'Agente com o ID fornecido não foi encontrado.' });
         }
 
-        const casoAtualizado = await casosRepository.update(id, { titulo, descricao, status, agente_id: agente_id || null });
+        const dataToUpdate = { titulo, descricao, status, agente_id: agente_id || null };
+        const casoAtualizado = await casosRepository.update(id, dataToUpdate);
+
         if (!casoAtualizado) {
             return res.status(404).json({ message: 'Caso não encontrado.' });
         }

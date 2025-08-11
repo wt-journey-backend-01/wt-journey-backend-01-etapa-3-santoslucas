@@ -1,3 +1,4 @@
+// English comments as requested by the user.
 const agentesRepository = require('../repositories/agentesRepository');
 const casosRepository = require('../repositories/casosRepository');
 
@@ -68,6 +69,7 @@ async function updateAgenteCompleto(req, res) {
     try {
         const { id } = req.params;
         const { nome, dataDeIncorporacao, cargo } = req.body;
+
         if (req.body.id) {
             return res.status(400).json({ message: "O campo 'id' não pode ser alterado." });
         }
@@ -80,6 +82,7 @@ async function updateAgenteCompleto(req, res) {
         if (!isValidDate(dataDeIncorporacao)) {
             return res.status(400).json({ message: 'O campo "dataDeIncorporacao" deve ser uma data válida e não pode ser no futuro.' });
         }
+
         const updatedAgente = await agentesRepository.update(id, { nome, dataDeIncorporacao, cargo });
         if (!updatedAgente) {
             return res.status(404).json({ message: 'Agente não encontrado.' });
@@ -103,6 +106,7 @@ async function updateAgenteParcial(req, res) {
         if (data.dataDeIncorporacao && !isValidDate(data.dataDeIncorporacao)) {
             return res.status(400).json({ message: 'O campo "dataDeIncorporacao" deve ser uma data válida e não pode ser no futuro.' });
         }
+        
         const updatedAgente = await agentesRepository.update(id, data);
         if (!updatedAgente) {
             return res.status(404).json({ message: 'Agente não encontrado.' });

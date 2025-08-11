@@ -3,11 +3,13 @@
  * @returns { Promise<void> } 
  */
 exports.seed = async function(knex) {
+
   await knex('agentes').del();
 
   await knex('agentes').insert([
-    { nome: 'João Silva', dataDeIncorporacao: '2020-01-01', cargo: 'Detetive' },
-    { nome: 'Maria Souza', dataDeIncorporacao: '2019-05-10', cargo: 'Investigadora' }
-  ]).returning('*');
+    { nome: 'Fox Mulder', dataDeIncorporacao: '1990-10-24', cargo: 'Agente Especial' },
+    { nome: 'Dana Scully', dataDeIncorporacao: '1992-03-06', cargo: 'Agente Especial' },
+    { nome: 'Walter Skinner', dataDeIncorporacao: '1986-11-15', cargo: 'Diretor Assistente' }
+  ]);
 };
 
