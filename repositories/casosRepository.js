@@ -16,29 +16,37 @@ async function findAll(filters) {
         });
     }
 
-    return await query.select('*');
-}
-
-async function findByAgenteId(agenteId) {
-    return db('casos').where({ agente_id: agenteId }).select('*');
+    const rows = await query.select('*');
+    return rows;
 }
 
 async function findById(id) {
-    return db('casos').where({ id }).first();
+    const caso = await db('casos').where({ id }).first();
+    return caso;
 }
+
 async function create(caso) {
     const [novoCaso] = await db('casos').insert(caso).returning('*');
     return novoCaso;
 }
+
 async function update(id, data) {
+    const existing = await findById(id);
+    if (!existing) return null;
+
     const [casoAtualizado] = await db('casos').where({ id }).update(data).returning('*');
     return casoAtualizado;
 }
+
 async function remove(id) {
     const count = await db('casos').where({ id }).del();
     return count > 0;
 }
 
+async function findByAgenteId(agente_id) {
+    const rows = await db('casos').where({ agente_id }).select('*');
+    return rows;
+}
 
 module.exports = {
   findAll,

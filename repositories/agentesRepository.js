@@ -14,21 +14,25 @@ async function findAll(filters) {
     query.whereRaw('"dataDeIncorporacao" <= ?::date', [filters.dataDeIncorporacaoFim]);
   }
 
+  // sorting: apply after filters
   if (filters?.sort) {
     const order = filters.sort.startsWith('-') ? 'desc' : 'asc';
     const column = filters.sort.replace('-', '');
-    
+
     const validSortColumns = ['nome', 'dataDeIncorporacao', 'cargo'];
     if (validSortColumns.includes(column)) {
-        query.orderBy(column, order);
+      // Use orderByRaw with quoted column name to avoid case-sensitive issues
+      query.orderByRaw(`"${column}" ${order}`);
     }
   }
 
-  return await query.select('*');
+  const rows = await query.select('*');
+  return rows;
 }
 
 async function findById(id) {
-  return db('agentes').where({ id }).first();
+  const agente = await db('agentes').where({ id }).first();
+  return agente;
 }
 
 async function create(agente) {
@@ -37,6 +41,10 @@ async function create(agente) {
 }
 
 async function update(id, data) {
+  // Ensure the record exists before updating to allow controllers to return 404 reliably
+  const existing = await findById(id);
+  if (!existing) return null;
+
   const [agenteAtualizado] = await db('agentes').where({ id }).update(data).returning('*');
   return agenteAtualizado;
 }
