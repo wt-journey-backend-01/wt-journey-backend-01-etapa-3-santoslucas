@@ -1,11 +1,28 @@
 const db = require('../db/db');
 
-async function findAll() {
-  return await db('agentes').select('*');
+async function findAll(filters) {
+  const query = db('agentes');
+
+  if (filters?.cargo) {
+    query.where('cargo', 'ilike', `%${filters.cargo}%`);
+  }
+
+  if (filters?.sort) {
+    const order = filters.sort.startsWith('-') ? 'desc' : 'asc';
+    const column = filters.sort.replace('-', '');
+    
+    // Whitelist valid columns for sorting to prevent SQL injection.
+    const validSortColumns = ['nome', 'dataDeIncorporacao', 'cargo'];
+    if (validSortColumns.includes(column)) {
+        query.orderBy(column, order);
+    }
+  }
+
+  return await query.select('*');
 }
 
 async function findById(id) {
-  return await db('agentes').where({ id }).first();
+  return db('agentes').where({ id }).first();
 }
 
 async function create(agente) {
@@ -23,10 +40,4 @@ async function remove(id) {
   return count > 0;
 }
 
-module.exports = {
-  findAll,
-  findById,
-  create,
-  update,
-  remove,
-};
+module.exports = { findAll, findById, create, update, remove };
