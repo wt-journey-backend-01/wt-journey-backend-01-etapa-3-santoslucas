@@ -7,11 +7,17 @@ async function findAll(filters) {
     query.where('cargo', 'ilike', `%${filters.cargo}%`);
   }
 
+  if (filters?.dataIncorporacaoInicio) {
+    query.where('dataDeIncorporacao', '>=', filters.dataIncorporacaoInicio);
+  }
+  if (filters?.dataIncorporacaoFim) {
+    query.where('dataDeIncorporacao', '<=', filters.dataIncorporacaoFim);
+  }
+
   if (filters?.sort) {
     const order = filters.sort.startsWith('-') ? 'desc' : 'asc';
     const column = filters.sort.replace('-', '');
     
-    // Whitelist valid columns for sorting to prevent SQL injection.
     const validSortColumns = ['nome', 'dataDeIncorporacao', 'cargo'];
     if (validSortColumns.includes(column)) {
         query.orderBy(column, order);

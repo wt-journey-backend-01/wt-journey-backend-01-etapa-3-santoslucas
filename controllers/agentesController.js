@@ -1,4 +1,3 @@
-// English comments as requested by the user.
 const agentesRepository = require('../repositories/agentesRepository');
 const casosRepository = require('../repositories/casosRepository');
 
@@ -9,55 +8,14 @@ const isValidDate = (dateStr) => {
     return date instanceof Date && !isNaN(date) && date <= new Date();
 };
 
-async function getAllAgentes(req, res) {
-    try {
-        const agentes = await agentesRepository.findAll(req.query);
-        res.status(200).json(agentes);
-    } catch (error) {
-        res.status(500).json({ message: "Internal server error." });
-    }
-}
-
-async function getAgenteById(req, res) {
-    try {
-        const { id } = req.params;
-        if (!UUID_REGEX.test(id)) {
-            return res.status(400).json({ message: 'Invalid ID format.' });
-        }
-        const agente = await agentesRepository.findById(id);
-        if (!agente) {
-            return res.status(404).json({ message: 'Agent not found.' });
-        }
-        res.status(200).json(agente);
-    } catch (error) {
-        res.status(500).json({ message: "Internal server error." });
-    }
-}
-
-async function createAgente(req, res) {
-    try {
-        const { nome, dataDeIncorporacao, cargo } = req.body;
-        if (!nome || typeof nome !== 'string' || nome.trim() === '') {
-            return res.status(400).json({ message: 'The "nome" field is required.' });
-        }
-        if (!cargo || typeof cargo !== 'string' || cargo.trim() === '') {
-            return res.status(400).json({ message: 'The "cargo" field is required.' });
-        }
-        if (!dataDeIncorporacao || !isValidDate(dataDeIncorporacao)) {
-            return res.status(400).json({ message: 'The "dataDeIncorporacao" field is required, must be a valid date, and cannot be in the future.' });
-        }
-        const newAgente = await agentesRepository.create({ nome, dataDeIncorporacao, cargo });
-        res.status(201).json(newAgente);
-    } catch (error) {
-        res.status(500).json({ message: "Internal server error while creating agent." });
-    }
-}
-
 async function updateAgenteCompleto(req, res) { // PUT
     try {
         const { id } = req.params;
         const { nome, dataDeIncorporacao, cargo } = req.body;
 
+        if (req.body.id) {
+            return res.status(400).json({ message: "The 'id' field cannot be changed." });
+        }
         if (!UUID_REGEX.test(id)) {
             return res.status(400).json({ message: 'Invalid ID format.' });
         }
@@ -83,11 +41,11 @@ async function updateAgenteParcial(req, res) { // PATCH
         const { id } = req.params;
         const data = req.body;
 
-        if (!UUID_REGEX.test(id)) {
-            return res.status(400).json({ message: 'Invalid ID format.' });
-        }
         if (data.id) {
             return res.status(400).json({ message: "The 'id' field cannot be changed." });
+        }
+        if (!UUID_REGEX.test(id)) {
+            return res.status(400).json({ message: 'Invalid ID format.' });
         }
         if (data.dataDeIncorporacao && !isValidDate(data.dataDeIncorporacao)) {
             return res.status(400).json({ message: 'The "dataDeIncorporacao" field must be a valid date and cannot be in the future.' });
@@ -100,6 +58,50 @@ async function updateAgenteParcial(req, res) { // PATCH
         res.status(200).json(updatedAgente);
     } catch (error) {
         res.status(500).json({ message: "Internal server error while updating agent." });
+    }
+}
+
+async function getAllAgentes(req, res) {
+    try {
+        const agentes = await agentesRepository.findAll(req.query);
+        res.status(200).json(agentes);
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+async function getAgenteById(req, res) {
+    try {
+        const { id } = req.params;
+        if (!UUID_REGEX.test(id)) {
+            return res.status(400).json({ message: 'Invalid ID format.' });
+        }
+        const agente = await agentesRepository.findById(id);
+        if (!agente) {
+            return res.status(404).json({ message: 'Agent not found' });
+        }
+        res.status(200).json(agente);
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+async function createAgente(req, res) {
+    try {
+        const { nome, dataDeIncorporacao, cargo } = req.body;
+        if (!nome || typeof nome !== 'string' || nome.trim() === '') {
+            return res.status(400).json({ message: 'The "nome" field is required.' });
+        }
+        if (!cargo || typeof cargo !== 'string' || cargo.trim() === '') {
+            return res.status(400).json({ message: 'The "cargo" field is required.' });
+        }
+        if (!dataDeIncorporacao || !isValidDate(dataDeIncorporacao)) {
+            return res.status(400).json({ message: 'The "dataDeIncorporacao" field is required, must be a valid date, and cannot be in the future.' });
+        }
+        const newAgente = await agentesRepository.create({ nome, dataDeIncorporacao, cargo });
+        res.status(201).json(newAgente);
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error while creating agent." });
     }
 }
 

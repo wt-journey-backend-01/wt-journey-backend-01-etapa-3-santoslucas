@@ -20,3 +20,6 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Servidor do Departamento de Polícia rodando em http://localhost:${PORT}`);
 });
+
+const { globalErrorHandler } = require('./utils/errorHandler');
+app.use(globalErrorHandler);
