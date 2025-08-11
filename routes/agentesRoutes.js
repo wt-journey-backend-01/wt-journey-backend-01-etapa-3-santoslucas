@@ -167,7 +167,7 @@ router.put('/:id', agentesController.updateAgente);
  *       404:
  *         description: Agente não encontrado.
  */
-router.patch('/:id', agentesController.patchAgente);
+router.patch('/:id', agentesController.updateAgente);
 
 /**
  * @swagger
