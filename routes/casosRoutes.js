@@ -195,7 +195,7 @@ router.post('/', casosController.createCaso);
  *       404:
  *         description: Caso não encontrado.
  */
-router.put('/:id', casosController.updateCaso);
+router.put('/:id', casosController.updateCasoCompleto);
 
 /**
  * @swagger
@@ -238,7 +238,7 @@ router.put('/:id', casosController.updateCaso);
  *       404:
  *         description: Caso não encontrado.
  */
-router.patch('/:id', casosController.updateCaso);
+router.patch('/:id', casosController.updateCasoParcial);
 
 /**
  * @swagger
@@ -260,7 +260,5 @@ router.patch('/:id', casosController.updateCaso);
  *         description: Caso não encontrado.
  */
 router.delete('/:id', casosController.deleteCaso);
-
-router.get('/:caso_id/agente', casosController.getAgenteByCasoId);
 
 module.exports = router;

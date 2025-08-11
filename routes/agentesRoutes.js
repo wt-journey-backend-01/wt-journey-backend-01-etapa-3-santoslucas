@@ -126,8 +126,7 @@ router.post('/', agentesController.createAgente);
  *       404:
  *         description: Agente não encontrado.
  */
-router.put('/:id', agentesController.updateAgente);
-
+router.put('/:id', agentesController.updateAgenteCompleto);
 /**
  * @swagger
  * /agentes/{id}:
@@ -167,8 +166,7 @@ router.put('/:id', agentesController.updateAgente);
  *       404:
  *         description: Agente não encontrado.
  */
-router.patch('/:id', agentesController.updateAgente);
-
+router.patch('/:id', agentesController.updateAgenteParcial);
 /**
  * @swagger
  * /agentes/{id}:
@@ -189,5 +187,6 @@ router.patch('/:id', agentesController.updateAgente);
  *         description: Agente não encontrado.
  */
 router.delete('/:id', agentesController.deleteAgente);
+router.get('/:id/casos', agentesController.findCasosByAgente);
 
 module.exports = router;
